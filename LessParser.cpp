@@ -191,6 +191,33 @@ bool LessParser::tryParseBlockStart() {
 
 }
 
+bool LessParser::tryParseMixin() {
+
+    smatch match;
+
+    if(regex_search(mInput.substr(mOffset), match, regex("^([.#][a-zA-Z0-9-_]+);"))) {
+
+        cout << "MIXIN: " << match[1] << endl;
+
+        MixinNode* mixinNode = new MixinNode();
+        mixinNode->Parent = mCurrentBlock;
+        mixinNode->Anchor = string(match[1]);
+
+        mCurrentBlock->Children.push_back(mixinNode);
+
+        mOffset += match[0].length();
+
+        return true;
+
+    }
+    else {
+
+        return false;
+
+    }
+
+}
+
 bool LessParser::tryParseLiteral() {
 
     smatch match;
@@ -229,6 +256,14 @@ bool LessParser::tryParseBlockEnd() {
             //cout << ((ParseNode*) *it)->Type << endl;
 
             switch(((ParseNode*) *it)->Type) {
+                case ParseNodeType::Mixin:
+
+                    // -------- Begin Handling Mixin --------
+                    // TODO:
+                    // -------- End Handing Mixin --------
+
+                    break;
+
                 case ParseNodeType::Literal:
 
                     LiteralNode* literalNode = (LiteralNode*) *it;
@@ -312,6 +347,7 @@ void LessParser::Parse() {
         if(tryParseComment()) continue;
         if(tryParseVariable()) continue;
         if(tryParseBlockStart()) continue;
+        if(tryParseMixin()) continue;
         if(tryParseLiteral()) continue;
         if(tryParseBlockEnd()) continue;
 

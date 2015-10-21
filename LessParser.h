@@ -32,6 +32,7 @@ public:
     bool tryParseComment();
     bool tryParseVariable();
     bool tryParseBlockStart();
+    bool tryParseMixin();
     bool tryParseLiteral();
     bool tryParseBlockEnd();
 

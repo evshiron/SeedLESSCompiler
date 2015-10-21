@@ -14,7 +14,7 @@ using namespace std;
 
 enum ParseNodeType {
 
-    Unknown, Block, Comment, Literal
+    Unknown, Block, Comment, Mixin, Literal
 
 };
 
@@ -108,6 +108,28 @@ public:
         string str;
 
         str.append("/*\n").append(Content).append("\n*/\n");
+
+        return str;
+
+    }
+
+};
+
+class MixinNode : public ParseNode {
+
+public:
+
+    string Anchor;
+
+    MixinNode() {
+
+        Type = ParseNodeType::Mixin;
+
+    }
+
+    string ToString() {
+
+        string str("");
 
         return str;
 
