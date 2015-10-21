@@ -18,6 +18,11 @@ int main() {
 // Comment.
 /* Multiline comment. */
 
+@nice-blue: #5B83AD;
+#test2 {
+    color: @nice-blue;
+}
+
 #test4 {
   color: black;
   .c1 {

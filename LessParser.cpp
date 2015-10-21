@@ -24,7 +24,40 @@ LessParser::LessParser(string less) {
     mRootBlock = new BlockNode();
     mRootBlock->IsRoot = true;
 
+    mBlockMap["#ROOT#"] = mRootBlock;
+
     mCurrentBlock = mRootBlock;
+
+}
+
+string LessParser::findVariableValue(string key) {
+
+    string value("");
+
+    BlockNode* node = mCurrentBlock;
+
+    while(node != 0) {
+
+        //cout << node->Selectors << endl;
+
+        auto it = node->Variables.find(key);
+
+        if(it != node->Variables.end()) {
+
+            value = string(it->second);
+            break;
+
+        }
+        else {
+
+            node = (BlockNode*) node->Parent;
+            continue;
+
+        }
+
+    }
+
+    return value;
 
 }
 
@@ -143,6 +176,8 @@ bool LessParser::tryParseBlockStart() {
         mCurrentBlock->Children.push_back(blockNode);
         mCurrentBlock = blockNode;
 
+        mBlockMap[selectors] = blockNode;
+
         mOffset += match[1].length();
 
         return true;
@@ -165,6 +200,7 @@ bool LessParser::tryParseLiteral() {
         cout << "LITERAL: " << match[1] << ": " << match[2] << endl;
 
         LiteralNode* literalNode = new LiteralNode();
+        literalNode->Parent = mCurrentBlock;
         literalNode->Content = string(match[0]);
 
         mCurrentBlock->Children.push_back(literalNode);
@@ -187,6 +223,45 @@ bool LessParser::tryParseBlockEnd() {
     if(mInput[mOffset] == '}') {
 
         cout << "BLOCK_END: " << mCurrentBlock->Selectors << endl;
+
+        for(auto it = mCurrentBlock->Children.begin(); it != mCurrentBlock->Children.end(); ++it) {
+
+            //cout << ((ParseNode*) *it)->Type << endl;
+
+            switch(((ParseNode*) *it)->Type) {
+                case ParseNodeType::Literal:
+
+                    LiteralNode* literalNode = (LiteralNode*) *it;
+
+                    string output(literalNode->Content);
+
+                    // -------- Begin Handing Variables --------
+
+                    // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
+                    regex regexVariableUse("@([a-zA-Z-_]+)");
+                    sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
+                    sregex_iterator end = sregex_iterator();
+
+                    cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
+
+                    for(sregex_iterator it = begin; it != end; ++it) {
+
+                        string key = (*it).str();
+
+                        //cout << key << endl;
+
+                        output = regex_replace(output, regex(key), findVariableValue(key.substr(1)));
+
+                    }
+
+                    // -------- End Handing Variables --------
+
+                    literalNode->Content = output;
+
+                    break;
+            }
+
+        }
 
         mCurrentBlock = (BlockNode*) mCurrentBlock->Parent;
 

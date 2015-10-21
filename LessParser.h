@@ -14,8 +14,10 @@ private:
     string mInput;
     int mOffset = 0;
 
+    // Used in mixin.
     map<string, BlockNode*> mBlockMap;
-    list<BlockNode*> mBlockList;
+    // Want to use in flatten.
+    //list<BlockNode*> mBlockList;
 
     BlockNode* mRootBlock = 0;
     BlockNode* mCurrentBlock = 0;
@@ -25,6 +27,7 @@ public:
 
     LessParser(string less);
 
+    string findVariableValue(string key);
     void skipW(int count);
     bool tryParseComment();
     bool tryParseVariable();

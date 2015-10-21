@@ -40,10 +40,16 @@ class BlockNode : public ParseNode {
 
 public:
 
-    ParseNodeType Type = Block;
-    bool IsRoot = false;
+    bool IsRoot;
     string Selectors;
     map<string, string> Variables;
+
+    BlockNode() {
+
+        Type = ParseNodeType::Block;
+        IsRoot = false;
+
+    }
 
     string ToString() {
 
@@ -89,8 +95,13 @@ class CommentNode : public ParseNode {
 
 public:
 
-    ParseNodeType Type = Comment;
     string Content;
+
+    CommentNode() {
+
+        Type = ParseNodeType::Comment;
+
+    }
 
     string ToString() {
 
@@ -108,8 +119,13 @@ class LiteralNode : public ParseNode {
 
 public:
 
-    ParseNodeType Type = Literal;
     string Content;
+
+    LiteralNode() {
+
+        Type = ParseNodeType::Literal;
+
+    }
 
     string ToString() {
 
