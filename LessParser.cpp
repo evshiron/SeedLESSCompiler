@@ -287,51 +287,9 @@ void LessParser::PreParse() {
     output = regex_replace(output, regex("\r\n?"), "\n");
     // Strip out single comments.
     output = regex_replace(output, regex("//[^\n]+"), "");
-
-    /*
-    // -------- Begin Handling Variables --------
-
-    // FIXME: The currently implementation doesn't handle scopes, which can't pass test 5.
-
-    map<string, string> variables;
-
-    regex regexVariableDefine("@([a-zA-Z-_]+):\\s*([^;]+)\\s*;");
-    sregex_iterator begin(output.begin(), output.end(), regexVariableDefine);
-    sregex_iterator end;
-
-    cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable definitions." << endl;
-
-    for(auto it = begin; it != end; ++it) {
-
-        smatch match = *it;
-
-        //cout << match[1] << ": " << match[2] << endl;
-
-        variables[string(match[1])] = string(match[2]);
-
-    }
-
-    //cout << variables["nice-blue"] << endl;
-
-    // Remove variable definitions.
-    output = regex_replace(output, regexVariableDefine, "");
-
-    regex regexVariableUse("@([a-zA-Z-_]+)");
-    begin = sregex_iterator(output.begin(), output.end(), regexVariableUse);
-    end = sregex_iterator();
-
-    cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
-
-    for(auto it = begin; it != end; ++it) {
-
-        string key = (*it).str();
-
-        output = regex_replace(output, regex(key), variables[key.substr(1)]);
-
-    }
-
-    // -------- End Handling Variables --------
-    */
+    // Expand colors in short form.
+    //output = regex_replace(output, regex("#([a-zA-Z0-9])([a-zA-Z0-9])([a-zA-Z0-9])([^a-zA-Z0-9])"), "#$1$1$2$2$3$3$4");
+    output = regex_replace(output, regex("#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])([^a-fA-F0-9])"), "#$1$1$2$2$3$3$4");
 
     cout << "PreParse: " << output << endl;
 

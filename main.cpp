@@ -18,6 +18,7 @@ int main() {
 // Comment.
 /* Multiline comment. */
 
+@short-color: #4B4;
 @nice-blue: #5B83AD;
 #test2 {
     color: @nice-blue;
