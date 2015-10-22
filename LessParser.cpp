@@ -92,9 +92,11 @@ bool LessParser::tryParseComment() {
 
     if(mInput[mOffset] == '/' && mInput[mOffset+1] == '*') {
 
+        string input = mInput.substr(mOffset);
         smatch match;
+        regex regexComment("^/\\*\\s*(.+?)\\s*\\*/");
 
-        if(regex_search(mInput.substr(mOffset), match, regex("^/\\*\\s*(.+?)\\s*\\*/"))) {
+        if(regex_search(input, match, regexComment)) {
 
             cout << "COMMENT: " << match[1] << endl;
 
@@ -127,9 +129,11 @@ bool LessParser::tryParseVariable() {
 
     if(mInput[mOffset] == '@') {
 
+        string input = mInput.substr(mOffset);
         smatch match;
+        regex regexVariable("^@([a-zA-Z-_]+):\\s*([^;]+)\\s*;");
 
-        if(regex_search(mInput.substr(mOffset), match, regex("^@([a-zA-Z-_]+):\\s*([^;]+)\\s*;"))) {
+        if(regex_search(input, match, regexVariable)) {
 
             cout << "VARIABLE: " << match[1] << ": " << match[2] << endl;
 
@@ -157,9 +161,11 @@ bool LessParser::tryParseVariable() {
 
 bool LessParser::tryParseBlockStart() {
 
+    string input = mInput.substr(mOffset);
     smatch match;
+    regex regexBlockStart("^(([a-zA-Z0-9-_.#]+(?:\\s*,\\s*[a-zA-Z0-9-_.#]+)*)\\s*\\{)\\s*([^}]+)\\s*\\}");
 
-    if(regex_search(mInput.substr(mOffset), match, regex("^(([a-zA-Z0-9-_.#]+(?:\\s*,\\s*[a-zA-Z0-9-_.#]+)*)\\s*\\{)\\s*([^}]+)\\s*\\}"))) {
+    if(regex_search(input, match, regexBlockStart)) {
 
         cout << "BLOCK_START: " << match[2] << endl;
 
@@ -193,9 +199,11 @@ bool LessParser::tryParseBlockStart() {
 
 bool LessParser::tryParseMixin() {
 
+    string input = mInput.substr(mOffset);
     smatch match;
+    regex regexMixin("^([.#][a-zA-Z0-9-_]+);");
 
-    if(regex_search(mInput.substr(mOffset), match, regex("^([.#][a-zA-Z0-9-_]+);"))) {
+    if(regex_search(input, match, regexMixin)) {
 
         cout << "MIXIN: " << match[1] << endl;
 
@@ -220,9 +228,11 @@ bool LessParser::tryParseMixin() {
 
 bool LessParser::tryParseLiteral() {
 
+    string input = mInput.substr(mOffset);
     smatch match;
+    regex regexLiteral("^([a-zA-Z-_]+):\\s*([^;]+);");
 
-    if(regex_search(mInput.substr(mOffset), match, regex("^([a-zA-Z-_]+):\\s*([^;]+);"))) {
+    if(regex_search(input, match, regexLiteral)) {
 
         cout << "LITERAL: " << match[1] << ": " << match[2] << endl;
 
