@@ -32,10 +32,26 @@ The LESS Compiler is designed to have several stages before the final CSS is gen
       * Variable
       * Mixin
       * Literal
-    * Parse variables, with MIXINs and outer scopes
+  * Handle
+    * WIP: Parse variables, with MIXINs and outer scopes
       * `@[a-zA-Z0-9-_]`
       * `"@\{[a-zA-Z0-9-_]\}"`
-    * Calculate in LITERALs
+    * WIP: Calculate in LITERALs
       * `+ - * /`
       * `#[a-fA-F0-9]{6}`
       * `\d+px`
+
+## How To Mixin
+
+<del>Replace MIXIN with corresponding BLOCK and strip out inner MIXINs (or throw errors).</del>
+
+In `handleMixin`, help every MIXIN find their matching BLOCK. Currently no further operation.
+
+## How To Parse Variables
+
+Get variable values from current BLOCK first, then MIXINs in current BLOCK, finally parent/grandparent BLOCKs.
+
+## How To Generate CSS
+
+Recursively generate from top `BlockNode` to bottom `BlockNode`.
+
