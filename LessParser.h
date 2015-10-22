@@ -14,8 +14,7 @@ private:
     string mInput;
     int mOffset = 0;
 
-    // Want to use in flatten.
-    //list<BlockNode*> mBlockList;
+    map<string, BlockNode*> mBlockMap;
 
     BlockNode* mRootBlock = 0;
     BlockNode* mCurrentBlock = 0;
@@ -40,7 +39,7 @@ public:
     bool tryParseLiteral();
     bool tryParseBlockEnd();
 
-    void handleBlock(BlockNode* blockNode);
+    void handleMixin(BlockNode* blockNode);
 
     void PreParse();
     void Parse();

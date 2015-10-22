@@ -18,7 +18,7 @@ int main() {
 // Comment.
 /* Multiline comment. */
 
-@short-color: #4B4;
+@short-color: #4B4; // Comment.
 @nice-blue: #5B83AD;
 #test2 {
     color: @nice-blue;
@@ -67,6 +67,7 @@ Output:
     LessParser* parser = new LessParser(less);
     parser->PreParse();
     parser->Parse();
+    parser->Handle();
 
     cout << "Output: " << parser->GetRootBlock()->ToString() << endl;
 

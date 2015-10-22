@@ -22,7 +22,11 @@ LessParser::LessParser(string less) {
     mOffset = 0;
 
     mRootBlock = new BlockNode();
+    mRootBlock->Parent = 0;
     mRootBlock->IsRoot = true;
+    mRootBlock->Selectors = "";
+    mRootBlock->FullSelectors = "";
+    mBlockMap[""] = mRootBlock;
 
     mCurrentBlock = mRootBlock;
 
@@ -74,13 +78,13 @@ void LessParser::skipW(int count) {
                 mOffset++;
                 break;
             default:
-                goto OUT_OF_LOOP;
+                goto SKIP_DONE;
 
         }
 
     }
 
-    OUT_OF_LOOP:
+    SKIP_DONE:
 
     return;
 
@@ -99,6 +103,7 @@ bool LessParser::tryParseComment() {
             cout << "COMMENT: " << match[1] << endl;
 
             CommentNode* comment = new CommentNode();
+            comment->Parent = mCurrentBlock;
             comment->Content = string(match[1]);
 
             mCurrentBlock->Children.push_back(comment);
@@ -167,15 +172,26 @@ bool LessParser::tryParseBlockStart() {
 
         cout << "BLOCK_START: " << match[2] << endl;
 
-        // FIXME: WTF new operation hurts match[2]?!!!
-        string selectors(match[2]);
         BlockNode* blockNode = new BlockNode();
         blockNode->Parent = mCurrentBlock;
-        //blockNode->Selectors = string(match[2]);
-        blockNode->Selectors = selectors;
+        blockNode->IsRoot = false;
+        blockNode->Selectors = string(match[2]);
 
         //cout << "BLOCK_START_2: " << match[2] << endl;
         //cout << "BLOCK_START_2: " << blockNode->Selectors << endl;
+
+        string fullSelectors;
+
+        BlockNode* node = blockNode;
+        fullSelectors.append(node->Selectors);
+        while((node = (BlockNode*) node->Parent) != 0) {
+
+            if(node->Selectors != "") fullSelectors.insert(0, " ").insert(0, node->Selectors);
+
+        }
+
+        blockNode->FullSelectors = fullSelectors;
+        mBlockMap[blockNode->FullSelectors] = blockNode;
 
         mCurrentBlock->Children.push_back(blockNode);
         mCurrentBlock = blockNode;
@@ -279,6 +295,7 @@ bool LessParser::tryParseBlockEnd() {
                     string output(literalNode->Content);
 
                     // -------- Begin Handing Variables --------
+                    // TODO: Move to Handle.
 
                     // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
                     regex regexVariableUse("@([a-zA-Z-_]+)");
@@ -321,8 +338,52 @@ bool LessParser::tryParseBlockEnd() {
 
 }
 
-void LessParser::handleBlock(BlockNode* blockNode) {
+void LessParser::handleMixin(BlockNode* blockNode) {
 
+    cout << "MIXIN_START: " << blockNode->FullSelectors << endl;
+
+    for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
+
+        if((*it)->Type == ParseNodeType::Mixin) {
+
+            MixinNode* mixin = (MixinNode*) *it;
+
+            BlockNode* node = blockNode;
+            while((node = (BlockNode*) node->Parent) != 0) {
+
+                for(auto jt = node->Children.begin(); jt != node->Children.end(); ++jt) {
+
+                    if((*jt)->Type == ParseNodeType::Block) {
+
+                        BlockNode* block = (BlockNode*) *jt;
+
+                        if(block->Selectors == mixin->Anchor) {
+
+                            mixin->LinkedBlock = block;
+                            goto MIXIN_ONE_DONE;
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            MIXIN_ONE_DONE:
+                cout << "MIXIN_LINK: " << mixin->Anchor << " -> " << mixin->LinkedBlock->FullSelectors << endl;
+
+        }
+        else if((*it)->Type == ParseNodeType::Block) {
+
+            BlockNode* block = (BlockNode*) *it;
+            handleMixin(block);
+
+        }
+
+    }
+
+    cout << "MIXIN_END: " << blockNode->FullSelectors << endl;
 
 }
 
@@ -389,6 +450,6 @@ void LessParser::Parse() {
 
 void LessParser::Handle() {
 
-    //
+    handleMixin(mRootBlock);
 
 }

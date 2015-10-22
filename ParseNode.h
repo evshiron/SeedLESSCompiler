@@ -42,6 +42,7 @@ public:
 
     bool IsRoot;
     string Selectors;
+    string FullSelectors;
     map<string, string> Variables;
 
     BlockNode() {
@@ -61,15 +62,6 @@ public:
             selectors.append(" ");
 
             //cout << selectors << endl;
-
-            /*
-            BlockNode* node = this;
-            while((node = (BlockNode*) node->Parent)->Parent != 0) {
-
-                selectors.insert(0, " ").insert(0, node->Selectors);
-
-            }
-            */
 
             str.append(selectors);
             str.append("{\n");
@@ -122,10 +114,12 @@ class MixinNode : public ParseNode {
 public:
 
     string Anchor;
+    BlockNode* LinkedBlock = 0;
 
     MixinNode() {
 
         Type = ParseNodeType::Mixin;
+        LinkedBlock = 0;
 
     }
 
