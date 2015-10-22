@@ -52,6 +52,8 @@ string LessParser::findVariableValue(string key) {
         }
         else {
 
+            // TODO: Iterate MIXINs before working with parent BLOCKs.
+
             node = (BlockNode*) node->Parent;
             continue;
 
@@ -275,54 +277,6 @@ bool LessParser::tryParseBlockEnd() {
 
         cout << "BLOCK_END: " << mCurrentBlock->Selectors << endl;
 
-        for(auto it = mCurrentBlock->Children.begin(); it != mCurrentBlock->Children.end(); ++it) {
-
-            //cout << ((ParseNode*) *it)->Type << endl;
-
-            switch(((ParseNode*) *it)->Type) {
-                case ParseNodeType::Mixin:
-
-                    // -------- Begin Handling Mixin --------
-                    // TODO:
-                    // -------- End Handing Mixin --------
-
-                    break;
-
-                case ParseNodeType::Literal:
-
-                    LiteralNode* literalNode = (LiteralNode*) *it;
-
-                    string output(literalNode->Content);
-
-                    // -------- Begin Handing Variables --------
-                    // TODO: Move to Handle.
-
-                    // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
-                    regex regexVariableUse("@([a-zA-Z-_]+)");
-                    sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
-                    sregex_iterator end = sregex_iterator();
-
-                    cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
-
-                    for(sregex_iterator it = begin; it != end; ++it) {
-
-                        string key = (*it).str();
-
-                        //cout << key << endl;
-
-                        output = regex_replace(output, regex(key), findVariableValue(key.substr(1)));
-
-                    }
-
-                    // -------- End Handing Variables --------
-
-                    literalNode->Content = output;
-
-                    break;
-            }
-
-        }
-
         mCurrentBlock = (BlockNode*) mCurrentBlock->Parent;
 
         mOffset++;
@@ -384,6 +338,52 @@ void LessParser::handleMixin(BlockNode* blockNode) {
     }
 
     cout << "MIXIN_END: " << blockNode->FullSelectors << endl;
+
+}
+
+void LessParser::handleVariable(BlockNode* blockNode) {
+
+    cout << "VARIABLE_START: " << blockNode->FullSelectors << endl;
+
+    for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
+
+        if((*it)->Type == ParseNodeType::Literal) {
+
+            LiteralNode* literal = (LiteralNode*) *it;
+
+            string output(literal->Value);
+
+            // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
+            regex regexVariableUse("(@([a-zA-Z-_]+)|@\\{([a-zA-Z-_]+)\\})");
+            sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
+            sregex_iterator end = sregex_iterator();
+
+            cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
+
+            for(sregex_iterator it = begin; it != end; ++it) {
+
+                string key = (*it).str();
+
+                //cout << key << endl;
+
+                output = regex_replace(output, regex(key), findVariableValue(key.substr(1)));
+
+            }
+
+            literal->Value = output;
+
+        }
+        else if((*it)->Type == ParseNodeType::Block) {
+
+            BlockNode* block = (BlockNode*) *it;
+            handleVariable(block);
+
+        }
+
+
+    }
+
+    cout << "VARIABLE_END: " << blockNode->FullSelectors << endl;
 
 }
 
@@ -451,5 +451,6 @@ void LessParser::Parse() {
 void LessParser::Handle() {
 
     handleMixin(mRootBlock);
+    handleVariable(mRootBlock);
 
 }

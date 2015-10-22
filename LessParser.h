@@ -14,6 +14,7 @@ private:
     string mInput;
     int mOffset = 0;
 
+    // Map of Pair<FullSelectors, BlockNode*>.
     map<string, BlockNode*> mBlockMap;
 
     BlockNode* mRootBlock = 0;
@@ -32,6 +33,7 @@ public:
 
     string findVariableValue(string key);
     void skipW(int count);
+
     bool tryParseComment();
     bool tryParseVariable();
     bool tryParseBlockStart();
@@ -40,6 +42,7 @@ public:
     bool tryParseBlockEnd();
 
     void handleMixin(BlockNode* blockNode);
+    void handleVariable(BlockNode* blockNode);
 
     void PreParse();
     void Parse();
