@@ -60,14 +60,16 @@ public:
             string selectors(Selectors);
             selectors.append(" ");
 
-            cout << selectors << endl;
+            //cout << selectors << endl;
 
+            /*
             BlockNode* node = this;
             while((node = (BlockNode*) node->Parent)->Parent != 0) {
 
                 selectors.insert(0, " ").insert(0, node->Selectors);
 
             }
+            */
 
             str.append(selectors);
             str.append("{\n");
@@ -129,7 +131,9 @@ public:
 
     string ToString() {
 
-        string str("");
+        string str;
+
+        str.append(Anchor).append(";\n");
 
         return str;
 
@@ -142,6 +146,8 @@ class LiteralNode : public ParseNode {
 public:
 
     string Content;
+    string Key;
+    string Value;
 
     LiteralNode() {
 
@@ -153,7 +159,7 @@ public:
 
         string str;
 
-        str.append(Content).append("\n");
+        str.append(Key).append(": ").append(Value).append(";\n");
 
         return str;
 

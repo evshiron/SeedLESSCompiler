@@ -38,13 +38,37 @@ int main() {
   }
 }
 
+/*
+
+Output:
+
+#test2 {
+    color: #5B83AD;
+}
+
+#test4 {
+    color: black;
+    .c1 {
+        color: red;
+        .c11 {
+            #test2;
+            color:green;
+        }
+    }
+    .c2 {
+        color:yellow;
+    }
+}
+
+*/
+
 )";
 
     LessParser* parser = new LessParser(less);
     parser->PreParse();
     parser->Parse();
 
-    //cout << rootNode->ToString() << endl;
+    cout << "Output: " << parser->GetRootBlock()->ToString() << endl;
 
     return 0;
 

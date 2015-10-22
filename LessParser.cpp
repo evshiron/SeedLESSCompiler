@@ -24,8 +24,6 @@ LessParser::LessParser(string less) {
     mRootBlock = new BlockNode();
     mRootBlock->IsRoot = true;
 
-    mBlockMap["#ROOT#"] = mRootBlock;
-
     mCurrentBlock = mRootBlock;
 
 }
@@ -94,7 +92,7 @@ bool LessParser::tryParseComment() {
 
         string input = mInput.substr(mOffset);
         smatch match;
-        regex regexComment("^/\\*\\s*(.+?)\\s*\\*/");
+        regex regexComment("^/\\*\\s*([\\s\\S]+?)\\s*\\*/");
 
         if(regex_search(input, match, regexComment)) {
 
@@ -182,8 +180,6 @@ bool LessParser::tryParseBlockStart() {
         mCurrentBlock->Children.push_back(blockNode);
         mCurrentBlock = blockNode;
 
-        mBlockMap[selectors] = blockNode;
-
         mOffset += match[1].length();
 
         return true;
@@ -239,6 +235,8 @@ bool LessParser::tryParseLiteral() {
         LiteralNode* literalNode = new LiteralNode();
         literalNode->Parent = mCurrentBlock;
         literalNode->Content = string(match[0]);
+        literalNode->Key = string(match[1]);
+        literalNode->Value = string(match[2]);
 
         mCurrentBlock->Children.push_back(literalNode);
 
@@ -323,6 +321,11 @@ bool LessParser::tryParseBlockEnd() {
 
 }
 
+void LessParser::handleBlock(BlockNode* blockNode) {
+
+
+}
+
 void LessParser::PreParse() {
 
     string output(mInput);
@@ -381,5 +384,11 @@ void LessParser::Parse() {
         lastOffset = mOffset;
 
     }
+
+}
+
+void LessParser::Handle() {
+
+    //
 
 }
