@@ -13,7 +13,7 @@ int main() {
     //TreeNode* root = new TreeNode();
     //root->type = NodeType::Comment;
 
-    const char* less = R"(
+    const char *less = R"(
 
 // Comment.
 /* Multiline comment. */
@@ -40,7 +40,27 @@ int main() {
 
 )";
 
-    LessParser* parser = new LessParser(less);
+
+    const char *less_test3 = R"(
+
+@the-border: 1px;
+@base-color: #111111;
+@red:
+#842210;
+@domain:"dian.hust.edu.cn";
+#header {
+color: @base-color * 6;
+border-left: @the-border;
+border-right: @the-border * 2;
+}
+#footer {
+color: (@base-color+@red)*2;
+background:url("@{domain}/cn/show/slide/1.jpg")
+}
+
+)";
+
+    LessParser *parser = new LessParser(less_test3);
     parser->PreParse();
     parser->Parse();
 
