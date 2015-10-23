@@ -269,7 +269,7 @@ bool LessParser::tryParseLiteral() {
 
     string input = mInput.substr(mOffset);
     smatch match;
-    regex regexLiteral("^([a-zA-Z-_]+)\\s*:\\s*([^;]+);");
+    regex regexLiteral("^([a-zA-Z-_]+)\\s*:\\s*([^;]+)\\s*;");
 
     if(regex_search(input, match, regexLiteral)) {
 
