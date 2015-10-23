@@ -465,15 +465,19 @@ string LessParser::outputBlock(BlockNode* blockNode) {
 
     string output;
 
-    if(!blockNode->IsRoot) output.append(blockNode->FullSelectors).append(" {\n");
+    if(pendingNodes.size() > 0) {
 
-    for(auto it = pendingNodes.begin(); it != pendingNodes.end(); ++it) {
+        if(!blockNode->IsRoot) output.append(blockNode->FullSelectors).append(" {\n");
 
-        output.append((*it)->ToString());
+        for(auto it = pendingNodes.begin(); it != pendingNodes.end(); ++it) {
+
+            output.append((*it)->ToString());
+
+        }
+
+        if(!blockNode->IsRoot) output.append("}\n");
 
     }
-
-    if(!blockNode->IsRoot) output.append("}\n");
 
     for(auto it = pendingBlocks.begin(); it != pendingBlocks.end(); ++it) {
 
