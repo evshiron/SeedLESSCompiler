@@ -63,6 +63,6 @@ Recursively generate from top `BlockNode` to bottom `BlockNode`.
   * `test4.less`: PASS
   * `test5.less`: PASS
   * `test6.less`: PASS
-  * `test7.less`: FAIL
+  * `test7.less`: PASS
   * `test8.less`: PASS
 

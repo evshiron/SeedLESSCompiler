@@ -3,6 +3,7 @@
 //
 
 #include "LessParser.h"
+#include "ParseNode.h"
 
 #include <iostream>
 #include <string>
@@ -207,6 +208,7 @@ bool LessParser::tryParseBlockStart() {
         BlockNode* blockNode = new BlockNode();
         blockNode->Parent = mCurrentBlock;
         blockNode->IsRoot = false;
+        blockNode->IsFunction = string(match[1]).find("(") == string::npos ? false : true;
         blockNode->Selectors = string(match[2]);
 
         //cout << "BLOCK_START_2: " << match[2] << endl;
@@ -349,7 +351,15 @@ void LessParser::handleMixin(BlockNode* blockNode) {
 
                         if(block->Selectors == mixin->Anchor) {
 
-                            mixin->LinkedBlock = block;
+                            mixin->LinkedBlock = block->Copy();
+                            mixin->LinkedBlock->Parent = node;
+
+                            string fullSelectors(mixin->LinkedBlock->Selectors);
+                            if(!node->IsRoot) fullSelectors.insert(0, " ").insert(0, node->FullSelectors);
+                            mixin->LinkedBlock->FullSelectors = fullSelectors;
+
+                            if(mixin->Arguments != "") mixin->LinkedBlock->FillArguments(mixin->Arguments);
+
                             goto MIXIN_ONE_DONE;
 
                         }
@@ -383,6 +393,8 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
     cout << "VARIABLE_START: " << blockNode->FullSelectors << endl;
 
+    blockNode->LoadArguments();
+
     for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
 
         if((*it)->Type == ParseNodeType::Literal) {
@@ -406,7 +418,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
                 for(sregex_iterator it = begin; it != end; ++it) {
 
-                    string key = (*it).str();
+                    string key = string((*it)[0]);
 
                     //cout << key << endl;
 
@@ -430,7 +442,12 @@ void LessParser::handleVariable(BlockNode* blockNode) {
             handleVariable(block);
 
         }
+        else if((*it)->Type == ParseNodeType::Mixin) {
 
+            MixinNode* mixin = (MixinNode*) *it;
+            handleVariable(mixin->LinkedBlock);
+
+        }
 
     }
 
@@ -480,6 +497,16 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
 }
 
 string LessParser::outputBlock(BlockNode* blockNode, int indent) {
+
+    if(blockNode->IsFunction) {
+
+        cout << "FUNCTION_BLOCK: " << blockNode->FullSelectors << endl;
+
+        return "";
+
+    }
+
+    cout << "BLOCK: " << blockNode->FullSelectors << endl;
 
     list<ParseNode*> pendingNodes;
     list<BlockNode*> pendingBlocks;
