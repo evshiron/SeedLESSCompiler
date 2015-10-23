@@ -43,6 +43,7 @@ public:
 
     void handleMixin(BlockNode* blockNode);
     void handleVariable(BlockNode* blockNode);
+    void handleLiteral(BlockNode* blockNode);
 
     string outputBlock(BlockNode* blockNode, int indent);
 

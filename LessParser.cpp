@@ -10,6 +10,8 @@
 #include <stack>
 #include <map>
 
+#include "Calculator.h"
+
 #define SIZE_TAB 4
 
 #define FATAL(x) { cout << x << endl; exit(1); }
@@ -436,6 +438,47 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
 }
 
+void LessParser::handleLiteral(BlockNode* blockNode) {
+
+    cout << "LITERAL_START: " << blockNode->FullSelectors << endl;
+
+    regex regexSymbol("[\\+\\-\\*\\/]");
+
+    for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
+
+        if((*it)->Type == ParseNodeType::Literal) {
+
+            LiteralNode* literal = (LiteralNode*) *it;
+
+            cout << "LITERAL_START_KEY: " << literal->Key << endl;
+
+            string output(literal->Value);
+
+            if(regex_search(output, regexSymbol)) {
+
+                cout << "LITERAL_START_VALUE: " << literal->Value << endl;
+
+                output = Calculate(output);
+
+            }
+
+            literal->Value = output;
+
+        }
+        else if((*it)->Type == ParseNodeType::Block) {
+
+            BlockNode* block = (BlockNode*) *it;
+            handleLiteral(block);
+
+        }
+
+
+    }
+
+    cout << "LITERAL_END: " << blockNode->FullSelectors << endl;
+
+}
+
 string LessParser::outputBlock(BlockNode* blockNode, int indent) {
 
     list<ParseNode*> pendingNodes;
@@ -571,6 +614,7 @@ void LessParser::Handle() {
 
     handleMixin(mRootBlock);
     handleVariable(mRootBlock);
+    handleLiteral(mRootBlock);
 
 }
 
