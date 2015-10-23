@@ -206,6 +206,7 @@ bool LessParser::tryParseBlockStart() {
         BlockNode* blockNode = new BlockNode();
         blockNode->Parent = mCurrentBlock;
         blockNode->IsRoot = false;
+        blockNode->IsFunction = string(match[1]).find("(") == string::npos ? false : true;
         blockNode->Selectors = string(match[2]);
 
         //cout << "BLOCK_START_2: " << match[2] << endl;
@@ -453,6 +454,16 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 }
 
 string LessParser::outputBlock(BlockNode* blockNode, int indent) {
+
+    if(blockNode->IsFunction) {
+
+        cout << "FUNCTION_BLOCK: " << blockNode->FullSelectors << endl;
+
+        return "";
+
+    }
+
+    cout << "BLOCK: " << blockNode->FullSelectors << endl;
 
     list<ParseNode*> pendingNodes;
     list<BlockNode*> pendingBlocks;

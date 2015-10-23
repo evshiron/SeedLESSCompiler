@@ -50,6 +50,7 @@ class BlockNode : public ParseNode {
 public:
 
     bool IsRoot;
+    bool IsFunction;
     string Selectors;
     string FullSelectors;
     string Arguments;
@@ -59,6 +60,7 @@ public:
 
         Type = ParseNodeType::Block;
         IsRoot = false;
+        IsFunction = false;
 
     }
 
