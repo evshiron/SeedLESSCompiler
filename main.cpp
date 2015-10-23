@@ -23,6 +23,7 @@ int main() {
 #test2 {
     color: @nice-blue;
     @green: #00ff00;
+    @url: "aaa";
 }
 
 #test4 {
@@ -32,6 +33,7 @@ int main() {
      .c11{
         #test2;
         color:@green;
+        background-image: url("@{url}");
      }
   }
   .c2{
