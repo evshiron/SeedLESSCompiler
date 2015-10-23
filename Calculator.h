@@ -6,7 +6,7 @@
 #define SEEDLESSCOMPILER_CALCULATE_H
 
 #include <string.h>
-#include <bits/stringfwd.h>
+#include <sstream>
 
 using namespace std;
 //const int MAX = 1000;
