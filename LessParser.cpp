@@ -382,25 +382,31 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
             string output(literal->Value);
 
-            // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
-            regex regexVariableUse("(?:@([a-zA-Z-_]+)|@\\{([a-zA-Z-_]+)\\})");
-            sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
-            sregex_iterator end = sregex_iterator();
+            while(true) {
 
-            cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
+                // The sregex_iterator saves a pointer to the regex, so you can't use something like begin(a, b, regex()).
+                regex regexVariableUse("(?:@([a-zA-Z-_]+)|@\\{([a-zA-Z-_]+)\\})");
+                sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
+                sregex_iterator end = sregex_iterator();
 
-            for(sregex_iterator it = begin; it != end; ++it) {
+                cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
 
-                string key = (*it).str();
+                if(REGEX_MATCH_COUNT(begin) == 0) break;
 
-                //cout << key << endl;
+                for(sregex_iterator it = begin; it != end; ++it) {
 
-                smatch match;
+                    string key = (*it).str();
 
-                regex_search(output, match, regexVariableUse);
+                    //cout << key << endl;
 
-                output.replace(output.find(key), key.length(), findVariableValue(blockNode, string(match[1]) == "" ? match[2] : match[1]));
-                //output = regex_replace(output, regex(key), findVariableValue(blockNode, key.substr(1)));
+                    smatch match;
+
+                    regex_search(output, match, regexVariableUse);
+
+                    output.replace(output.find(key), key.length(), findVariableValue(blockNode, string(match[1]) == "" ? match[2] : match[1]));
+                    //output = regex_replace(output, regex(key), findVariableValue(blockNode, key.substr(1)));
+
+                }
 
             }
 
