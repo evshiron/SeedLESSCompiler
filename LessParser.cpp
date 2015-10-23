@@ -3,6 +3,7 @@
 //
 
 #include "LessParser.h"
+#include "ParseNode.h"
 
 #include <iostream>
 #include <string>
@@ -347,7 +348,15 @@ void LessParser::handleMixin(BlockNode* blockNode) {
 
                         if(block->Selectors == mixin->Anchor) {
 
-                            mixin->LinkedBlock = block;
+                            mixin->LinkedBlock = block->Copy();
+                            mixin->LinkedBlock->Parent = node;
+
+                            string fullSelectors(mixin->LinkedBlock->Selectors);
+                            if(!node->IsRoot) fullSelectors.insert(0, " ").insert(0, node->FullSelectors);
+                            mixin->LinkedBlock->FullSelectors = fullSelectors;
+
+                            if(mixin->Arguments != "") mixin->LinkedBlock->FillArguments(mixin->Arguments);
+
                             goto MIXIN_ONE_DONE;
 
                         }
@@ -381,6 +390,8 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
     cout << "VARIABLE_START: " << blockNode->FullSelectors << endl;
 
+    blockNode->LoadArguments();
+
     for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
 
         if((*it)->Type == ParseNodeType::Literal) {
@@ -404,7 +415,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
                 for(sregex_iterator it = begin; it != end; ++it) {
 
-                    string key = (*it).str();
+                    string key = string((*it)[0]);
 
                     //cout << key << endl;
 
@@ -428,7 +439,12 @@ void LessParser::handleVariable(BlockNode* blockNode) {
             handleVariable(block);
 
         }
+        else if((*it)->Type == ParseNodeType::Mixin) {
 
+            MixinNode* mixin = (MixinNode*) *it;
+            handleVariable(mixin->LinkedBlock);
+
+        }
 
     }
 
