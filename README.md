@@ -55,3 +55,14 @@ Get variable values from current BLOCK first, then MIXINs in current BLOCK, fina
 
 Recursively generate from top `BlockNode` to bottom `BlockNode`.
 
+## Seed Test Results
+
+  * `test1.less`: PASS
+  * `test2.less`: PASS
+  * `test3.less`: FAIL
+  * `test4.less`: PASS
+  * `test5.less`: PASS
+  * `test6.less`: PASS
+  * `test7.less`: FAIL
+  * `test8.less`: PASS
+
