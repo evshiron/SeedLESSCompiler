@@ -10,6 +10,8 @@
 #include <stack>
 #include <map>
 
+#define SIZE_TAB 4
+
 #define FATAL(x) { cout << x << endl; exit(1); }
 #define REGEX_MATCH_COUNT(x) distance(x, sregex_iterator())
 
@@ -419,7 +421,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
 }
 
-string LessParser::outputBlock(BlockNode* blockNode) {
+string LessParser::outputBlock(BlockNode* blockNode, int indent) {
 
     list<ParseNode*> pendingNodes;
     list<BlockNode*> pendingBlocks;
@@ -467,21 +469,21 @@ string LessParser::outputBlock(BlockNode* blockNode) {
 
     if(pendingNodes.size() > 0) {
 
-        if(!blockNode->IsRoot) output.append(blockNode->FullSelectors).append(" {\n");
+        if(!blockNode->IsRoot) output.append(string(indent, ' ')).append(blockNode->FullSelectors).append(" {\n");
 
         for(auto it = pendingNodes.begin(); it != pendingNodes.end(); ++it) {
 
-            output.append((*it)->ToString());
+            output.append(string(indent+SIZE_TAB, ' ')).append((*it)->ToString());
 
         }
 
-        if(!blockNode->IsRoot) output.append("}\n");
+        if(!blockNode->IsRoot) output.append(string(indent, ' ')).append("}\n");
 
     }
 
     for(auto it = pendingBlocks.begin(); it != pendingBlocks.end(); ++it) {
 
-        output.append(outputBlock(*it));
+        output.append(outputBlock(*it, indent));
 
     }
 
@@ -559,7 +561,7 @@ void LessParser::Handle() {
 
 string LessParser::GetCSS() {
 
-    return outputBlock(mRootBlock);
+    return outputBlock(mRootBlock, 0);
 
 }
 

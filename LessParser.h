@@ -44,7 +44,7 @@ public:
     void handleMixin(BlockNode* blockNode);
     void handleVariable(BlockNode* blockNode);
 
-    string outputBlock(BlockNode* blockNode);
+    string outputBlock(BlockNode* blockNode, int indent);
 
     void PreParse();
     void Parse();
