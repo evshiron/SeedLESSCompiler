@@ -121,7 +121,7 @@ bool LessParser::tryParseComment() {
 
         string input = mInput.substr(mOffset);
         smatch match;
-        regex regexComment("^/\\*\\s*([\\s\\S]+?)\\s*\\*/");
+        regex regexComment("^/\\*([\\s\\S]+?)\\*/");
 
         if(regex_search(input, match, regexComment)) {
 

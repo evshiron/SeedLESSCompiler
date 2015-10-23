@@ -101,7 +101,7 @@ public:
 
         string str;
 
-        str.append("/*\n").append(Content).append("\n*/\n");
+        str.append("/*").append(Content).append("*/\n");
 
         return str;
 
