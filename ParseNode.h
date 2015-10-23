@@ -43,6 +43,7 @@ public:
     bool IsRoot;
     string Selectors;
     string FullSelectors;
+    string Arguments;
     map<string, string> Variables;
 
     BlockNode() {
@@ -114,6 +115,7 @@ class MixinNode : public ParseNode {
 public:
 
     string Anchor;
+    string Arguments;
     BlockNode* LinkedBlock = 0;
 
     MixinNode() {

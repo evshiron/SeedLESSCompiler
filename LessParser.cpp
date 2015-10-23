@@ -193,7 +193,10 @@ bool LessParser::tryParseBlockStart() {
 
     string input = mInput.substr(mOffset);
     smatch match;
-    regex regexBlockStart("^(([a-zA-Z0-9-_.#]+(?:\\s*,\\s*[a-zA-Z0-9-_.#]+)*)\\s*\\{)\\s*([^}]+)\\s*\\}");
+    // match[1]: match until big bracket.
+    // match[2]: selectors.
+    // match[3]: arguments.
+    regex regexBlockStart("^(([a-zA-Z0-9-_.#]+(?:\\s*,\\s*[a-zA-Z0-9-_.#]+)*)\\s*(?:\\(([\\s\\S]*?)\\))?\\s*\\{)\\s*([^}]+)\\s*\\}");
 
     if(regex_search(input, match, regexBlockStart)) {
 
@@ -218,6 +221,9 @@ bool LessParser::tryParseBlockStart() {
         }
 
         blockNode->FullSelectors = fullSelectors;
+
+        blockNode->Arguments = string(match[3]);
+
         mBlockMap[blockNode->FullSelectors] = blockNode;
 
         mCurrentBlock->Children.push_back(blockNode);
@@ -240,15 +246,18 @@ bool LessParser::tryParseMixin() {
 
     string input = mInput.substr(mOffset);
     smatch match;
-    regex regexMixin("^([.#][a-zA-Z0-9-_]+);");
+    // match[1]: selectors.
+    // match[2]: arguments.
+    regex regexMixin("^([.#][a-zA-Z0-9-_]+)\\s*(?:\\(([\\s\\S]*?)\\))?\\s*;");
 
     if(regex_search(input, match, regexMixin)) {
 
-        cout << "MIXIN: " << match[1] << endl;
+        cout << "MIXIN: " << match[1] << "(" << match[2] << ")" << endl;
 
         MixinNode* mixinNode = new MixinNode();
         mixinNode->Parent = mCurrentBlock;
         mixinNode->Anchor = string(match[1]);
+        mixinNode->Arguments = string(match[2]);
 
         mCurrentBlock->Children.push_back(mixinNode);
 
