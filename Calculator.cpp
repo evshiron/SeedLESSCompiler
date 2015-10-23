@@ -15,6 +15,8 @@
 #include <string.h>
 #include <regex>
 
+#define REGEX_MATCH_COUNT(x) distance(x, sregex_iterator())
+
 using namespace std;
 
 
@@ -163,12 +165,7 @@ double Calculator::Calculate(char *buffer, double &sum)   //字符串读入和�
             while (ct < strlen(buffer) && IsData(buffer[ct])) {
                 temp[tp++] = buffer[ct++];
             }
-            if (temp[tp - 1] == 'e') {
-                for (int k = 0; k <= 3; k++)
-                    temp[tp++] = buffer[ct++];
-                temp[tp] = '\0';
-            }
-            else temp[tp] = '\0';
+            temp[tp] = '\0';
             tp = 0;                         //读到非数字也非小数为止
             ans = ToData(temp);             //把读到的字符串转化为数
             data.push(ans);      //将数字存入栈中l
@@ -249,6 +246,108 @@ double function_cal(char *Str_input)//Str_input代入equation[][]
 }
 
 
+char switchTo16(int number) {
+    if (number < 10) {
+        return number + '0';
+    }
+    else {
+        switch (number) {
+            case 10:
+                return 'A';
+                break;
+            case 11:
+                return 'B';
+                break;
+            case 12:
+                return 'C';
+                break;
+            case 13:
+                return 'D';
+                break;
+            case 14:
+                return 'E';
+                break;
+            case 15:
+                return 'F';
+                break;
+        }
+    }
+}
+
+
+int switch16To10(char number) {
+    if (number <= '9') {
+
+        return number - '0';
+    }
+    else {
+        switch (number) {
+            case 'A':
+            case 'a':
+                return 10;
+                break;
+            case 'B':
+            case 'b':
+                return 11;
+                break;
+            case 'C':
+            case 'c':
+                return 12;
+                break;
+            case 'D':
+            case 'd':
+                return 13;
+                break;
+            case 'E':
+            case 'e':
+                return 14;
+                break;
+            case 'F':
+            case 'f':
+                return 15;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+string rgbToString(int r, int g, int b) {
+    string rgb_str = "#";
+    rgb_str.resize(7);
+    rgb_str[0] = '#';
+//    cout <<"1  "<< switchTo16(r / 16) << endl;
+//    cout <<"2  "<< switchTo16(r % 16) << endl;
+//    cout <<"3  "<< switchTo16(g / 16) << endl;
+//    cout <<"4  "<< switchTo16(g % 16) << endl;
+//    cout <<"5  "<< switchTo16(b / 16) << endl;
+//    cout <<"6  "<< switchTo16(b % 16) << endl;
+    rgb_str[1] = switchTo16(r / 16);
+    rgb_str[2] = switchTo16(r % 16);
+    rgb_str[3] = switchTo16(g / 16);
+    rgb_str[4] = switchTo16(g % 16);
+    rgb_str[5] = switchTo16(b / 16);
+    rgb_str[6] = switchTo16(b % 16);
+    return rgb_str;
+
+}
+
+char *stringToCharArray(string str) {
+    char exercise[1024];
+    strncpy(exercise, str.c_str(), sizeof(exercise));
+    exercise[sizeof(exercise) - 1] = 0;
+    return exercise;
+}
+
+bool replace(std::string &str, const std::string &from, const std::string &to) {
+    size_t start_pos = str.find(from);
+    if (start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+
 string Calculate(string origin) {
 
     string pre_expression = origin;
@@ -273,12 +372,88 @@ string Calculate(string origin) {
     pre_expression.erase(remove_if(pre_expression.begin(), pre_expression.end(), ::isspace), pre_expression.end());
     cout << pre_expression << endl;
     if (pre_expression.find('#') != -1) {
-        regex regex_color("#[a-fA-F0-9]{6}");
-        smatch match;
-        if (regex_search(pre_expression, match, regex_color)) {
+        int r_val;
+        int g_val;
+        int b_val;
 
-            cout << "VARIABLE: " << match[0] << endl;
+        regex regex_color("#[a-fA-F0-9]{6}");
+
+        sregex_iterator begin(pre_expression.begin(), pre_expression.end(), regex_color);
+        sregex_iterator end = sregex_iterator();
+
+//        cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
+
+        string expression_one = pre_expression;
+        string expression_two = pre_expression;
+        string expression_three = pre_expression;
+        for (sregex_iterator it = begin; it != end; ++it) {
+
+            string key = (*it).str();
+
+            int one = switch16To10(key[1]);
+            int two = switch16To10(key[2]);
+            int temp = one * 16 + two;
+            string temp_s = to_string(temp);
+            replace(expression_one, key, temp_s);
+            cout << "expression_one" << expression_one << endl;
+//            cout << "temp"+temp_s << endl;
+//            cout << "key"+key << endl;
+//            cout << "expression_one"+expression_one << endl;
         }
+//        cout<<"array"<<stringToCharArray(expression_one)<<endl;
+        r_val = (int) function_cal(stringToCharArray(expression_one));
+        if (r_val > 255) {
+            r_val = 255;
+        }
+        cout << "r_val" << r_val << endl;
+        if (r_val < 0) {
+            r_val = 0;
+        }
+        for (sregex_iterator it = begin; it != end; ++it) {
+
+            string key = (*it).str();
+
+            int three = switch16To10(key[3]);
+            int four = switch16To10(key[4]);
+            int temp = three * 16 + four;
+            string temp_s = to_string(temp);
+            replace(expression_two, key, temp_s);
+//            cout << key << endl;
+        }
+        g_val = (int) function_cal(stringToCharArray(expression_two));
+        if (g_val > 255) {
+            g_val = 255;
+        }
+        if (g_val < 0) {
+            g_val = 0;
+        }
+
+
+        for (sregex_iterator it = begin; it != end; ++it) {
+
+            string key = (*it).str();
+
+            int five = switch16To10(key[5]);
+            int six = switch16To10(key[6]);
+            int temp = five * 16 + six;
+            string temp_s = to_string(temp);
+            replace(expression_three, key, temp_s);
+//            cout << key << endl;
+        }
+        b_val = (int) function_cal(stringToCharArray(expression_three));
+        if (b_val > 255) {
+            b_val = 255;
+        }
+        if (b_val < 0) {
+            b_val = 0;
+        }
+//        cout<<"r_double "<<(int)function_cal(stringToCharArray(expression_one))<<endl;
+//        cout<<"g_double "<<function_cal(stringToCharArray(expression_two))<<endl;
+//        cout<<"b_double "<<function_cal(stringToCharArray(expression_three))<<endl;
+//        cout << "r"<<r_val << endl;
+//        cout << "g"<<g_val << endl;
+//        cout << "b"<<b_val << endl;
+        return rgbToString(r_val, g_val, b_val);
     }
 
     else if (pre_expression.find('%') != -1) {
@@ -289,10 +464,11 @@ string Calculate(string origin) {
         exercise[sizeof(exercise) - 1] = 0;
 
         double result = function_cal(exercise);
-        if (result >= 100)
+        if (result >= 100) {
             result = 100;
+        }
         cout << result << '%' << endl;
-        ostringstream ss;
+        ostringstream ss;   //用这种方法可以处理.后0的数量
         ss << result;
         string s(ss.str());
 
@@ -306,8 +482,7 @@ string Calculate(string origin) {
         exercise[sizeof(exercise) - 1] = 0;
 
         double result = function_cal(exercise);
-        if (result >= 100)
-            result = 100;
+
         cout << result << "px" << endl;
         ostringstream ss;
         ss << result;
