@@ -159,7 +159,7 @@ bool LessParser::tryParseVariable() {
 
         string input = mInput.substr(mOffset);
         smatch match;
-        regex regexVariable("^@([a-zA-Z-_]+):\\s*[\"\']?([\\s\\S]+?)[\"\']?\\s*;");
+        regex regexVariable("^@([a-zA-Z-_]+)\\s*:\\s*[\"\']?([\\s\\S]+?)[\"\']?\\s*;");
 
         if(regex_search(input, match, regexVariable)) {
 
@@ -267,7 +267,7 @@ bool LessParser::tryParseLiteral() {
 
     string input = mInput.substr(mOffset);
     smatch match;
-    regex regexLiteral("^([a-zA-Z-_]+):\\s*([^;]+);");
+    regex regexLiteral("^([a-zA-Z-_]+)\\s*:\\s*([^;]+);");
 
     if(regex_search(input, match, regexLiteral)) {
 
@@ -506,7 +506,7 @@ void LessParser::PreParse() {
 
 void LessParser::Parse() {
 
-    cout << mInput.length() << endl;
+    //cout << mInput.length() << endl;
 
     int lastOffset = 0;
 
