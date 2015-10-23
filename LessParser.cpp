@@ -159,7 +159,7 @@ bool LessParser::tryParseVariable() {
 
         string input = mInput.substr(mOffset);
         smatch match;
-        regex regexVariable("^@([a-zA-Z-_]+):\\s*([^;]+)\\s*;");
+        regex regexVariable("^@([a-zA-Z-_]+):\\s*[\"\']?([\\s\\S]+?)[\"\']?\\s*;");
 
         if(regex_search(input, match, regexVariable)) {
 
