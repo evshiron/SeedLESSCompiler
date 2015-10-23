@@ -44,9 +44,12 @@ public:
     void handleMixin(BlockNode* blockNode);
     void handleVariable(BlockNode* blockNode);
 
+    string outputBlock(BlockNode* blockNode);
+
     void PreParse();
     void Parse();
     void Handle();
+    string GetCSS();
 
 };
 

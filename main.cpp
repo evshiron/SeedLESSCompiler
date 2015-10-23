@@ -72,7 +72,7 @@ Output:
     parser->Parse();
     parser->Handle();
 
-    cout << "Output: " << parser->GetRootBlock()->ToString() << endl;
+    cout << "Output: " << parser->GetCSS() << endl;
 
     return 0;
 

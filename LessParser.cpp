@@ -347,6 +347,8 @@ void LessParser::handleMixin(BlockNode* blockNode) {
 
             }
 
+            FATAL("ERROR_MIXIN_LINK_FAILED");
+
             MIXIN_ONE_DONE:
                 cout << "MIXIN_LINK: " << mixin->Anchor << " -> " << mixin->LinkedBlock->FullSelectors << endl;
 
@@ -417,6 +419,72 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
 }
 
+string LessParser::outputBlock(BlockNode* blockNode) {
+
+    list<ParseNode*> pendingNodes;
+    list<BlockNode*> pendingBlocks;
+
+    BlockNode* node = blockNode;
+
+    for(auto it = node->Children.begin(); it != node->Children.end(); ++it) {
+
+        BlockNode* linkedBlock = 0;
+
+        switch((*it)->Type) {
+
+            case ParseNodeType::Comment:
+            case ParseNodeType::Literal:
+                pendingNodes.push_back(*it);
+                break;
+            case ParseNodeType::Mixin:
+
+                linkedBlock = ((MixinNode*) *it)->LinkedBlock;
+
+                for(auto jt = linkedBlock->Children.begin(); jt != linkedBlock->Children.end(); ++jt) {
+
+                    switch((*jt)->Type) {
+
+                        case ParseNodeType::Literal:
+                            pendingNodes.push_back(*jt);
+                            break;
+                        case ParseNodeType::Mixin:
+                            FATAL("ERROR_MIXIN_IN_MIXIN");
+
+                    }
+
+                }
+
+                break;
+            case ParseNodeType::Block:
+                pendingBlocks.push_back((BlockNode*) *it);
+                break;
+
+        }
+
+    }
+
+    string output;
+
+    if(!blockNode->IsRoot) output.append(blockNode->FullSelectors).append(" {\n");
+
+    for(auto it = pendingNodes.begin(); it != pendingNodes.end(); ++it) {
+
+        output.append((*it)->ToString());
+
+    }
+
+    if(!blockNode->IsRoot) output.append("}\n");
+
+    for(auto it = pendingBlocks.begin(); it != pendingBlocks.end(); ++it) {
+
+        output.append(outputBlock(*it));
+
+    }
+
+    return output;
+
+}
+
 void LessParser::PreParse() {
 
     string output(mInput);
@@ -484,3 +552,10 @@ void LessParser::Handle() {
     handleVariable(mRootBlock);
 
 }
+
+string LessParser::GetCSS() {
+
+    return outputBlock(mRootBlock);
+
+}
+
