@@ -31,7 +31,7 @@ public:
 
     }
 
-    string findVariableValue(string key);
+    string findVariableValue(BlockNode* blockNode, string key);
     void skipW(int count);
 
     bool tryParseComment();

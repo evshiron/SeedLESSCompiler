@@ -32,11 +32,11 @@ LessParser::LessParser(string less) {
 
 }
 
-string LessParser::findVariableValue(string key) {
+string LessParser::findVariableValue(BlockNode* blockNode, string key) {
 
     string value("");
 
-    BlockNode* node = mCurrentBlock;
+    BlockNode* node = blockNode;
 
     while(node != 0) {
 
@@ -47,12 +47,31 @@ string LessParser::findVariableValue(string key) {
         if(it != node->Variables.end()) {
 
             value = string(it->second);
-            break;
+            goto FIND_VARIABLE_DONE;
 
         }
         else {
 
-            // TODO: Iterate MIXINs before working with parent BLOCKs.
+            for(auto jt = node->Children.begin(); jt != node->Children.end(); ++jt) {
+
+                cout << (*jt)->Type << endl;
+
+                if((*jt)->Type == ParseNodeType::Mixin) {
+
+                    BlockNode* linkedBlock = ((MixinNode*) *jt)->LinkedBlock;
+
+                    auto kt = linkedBlock->Variables.find(key);
+
+                    if(kt != linkedBlock->Variables.end()) {
+
+                        value = string(kt->second);
+                        goto FIND_VARIABLE_DONE;
+
+                    }
+
+                }
+
+            }
 
             node = (BlockNode*) node->Parent;
             continue;
@@ -60,6 +79,10 @@ string LessParser::findVariableValue(string key) {
         }
 
     }
+
+    FIND_VARIABLE_DONE:
+
+    if(value == "") FATAL("ERROR_VARIABLE_NOT_FOUND");
 
     return value;
 
@@ -366,7 +389,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
                 //cout << key << endl;
 
-                output = regex_replace(output, regex(key), findVariableValue(key.substr(1)));
+                output = regex_replace(output, regex(key), findVariableValue(blockNode, key.substr(1)));
 
             }
 

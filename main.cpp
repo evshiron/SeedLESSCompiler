@@ -22,6 +22,7 @@ int main() {
 @nice-blue: #5B83AD;
 #test2 {
     color: @nice-blue;
+    @green: #00ff00;
 }
 
 #test4 {
@@ -30,7 +31,7 @@ int main() {
      color: red;
      .c11{
         #test2;
-        color:green;
+        color:@green;
      }
   }
   .c2{
