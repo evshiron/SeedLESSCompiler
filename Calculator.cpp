@@ -97,7 +97,7 @@ double Calculator::Call(double sum, double data, char ch) {
             ans = sum + data;
             break;
         case '-':
-            ans = sum - data;
+            ans = data- sum;//TODO
             break;
         case '*':
             ans = sum * data;
