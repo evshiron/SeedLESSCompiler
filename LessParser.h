@@ -34,6 +34,7 @@ public:
     string findVariableValue(BlockNode* blockNode, string key);
     void skipW(int count);
 
+    bool needCalculate(string expression);
     bool tryParseComment();
     bool tryParseVariable();
     bool tryParseBlockStart();

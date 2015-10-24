@@ -455,11 +455,29 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
 }
 
+/**
+ * gcc  4.9 can't support the regex [\\+\\-\\*\\/],
+ * so i write a function to replace it
+ */
+bool LessParser::needCalculate(string expression)
+{
+    if(expression.find('+')!=-1)
+        return true;
+    else if(expression.find('-')!=-1)
+        return true;
+    else if(expression.find('*')!=-1)
+        return true;
+    else if(expression.find('/')!=-1)
+        return true;
+    else
+        return false;
+}
+
 void LessParser::handleLiteral(BlockNode* blockNode) {
 
     cout << "LITERAL_START: " << blockNode->FullSelectors << endl;
 
-    regex regexSymbol("[\\+\\-\\*\\/]");
+//    regex regexSymbol("[\\+\\-\\*\\/]");
 
     for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
 
@@ -471,7 +489,7 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
 
             string output(literal->Value);
 
-            if(regex_search(output, regexSymbol)) {
+            if(needCalculate(output)) {
 
                 cout << "LITERAL_START_VALUE: " << literal->Value << endl;
 
