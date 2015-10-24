@@ -506,6 +506,13 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
             handleLiteral(block);
 
         }
+        else if((*it)->Type == ParseNodeType::Mixin) {
+
+            MixinNode* mixin = (MixinNode*) *it;
+            handleLiteral(mixin->LinkedBlock);
+
+        }
+
 
 
     }
