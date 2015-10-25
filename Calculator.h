@@ -14,6 +14,9 @@ using namespace std;
 string Calculate(string origin);
 
 double function_cal(char *Str_input);
+char switchTo16(int number);
+bool replace(std::string &str, const std::string &from, const std::string &to);
+string rgbToString(int r, int g, int b);
 
 template<class Type>
 class STACK {                 //定义栈类

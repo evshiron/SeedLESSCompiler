@@ -6,7 +6,9 @@
 #define SEEDLESSCOMPILER_LESSPARSER_H
 
 #include "ParseNode.h"
-
+string rgbToString(int r, int g, int b);
+string rgbaConvert(string rgba);
+string rgbConvert(string rgb);
 class LessParser {
 
 private:
