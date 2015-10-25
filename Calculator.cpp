@@ -405,7 +405,7 @@ string Calculate(string origin) {
         if (r_val > 255) {
             r_val = 255;
         }
-        cout << "r_val" << r_val << endl;
+//        cout << "r_val" << r_val << endl;
         if (r_val < 0) {
             r_val = 0;
         }
