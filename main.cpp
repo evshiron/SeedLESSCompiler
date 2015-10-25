@@ -14,6 +14,8 @@ int main(int argc, const char** argv) {
 
         cerr << R"(Usage: SeedLESSCompiler <source.less> > <dest.css>)" << endl;
 
+        return 1;
+
     }
     else {
 
