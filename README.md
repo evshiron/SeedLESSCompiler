@@ -24,7 +24,7 @@ The LESS Compiler is designed to have several stages before the final CSS is gen
     * Format newline characters
     * Remove single line comments
     * Expand short colors
-    * TODO: rgb(r, g, b) to #RRGGBB
+    * rgb(r, g, b) to #RRGGBB
   * Parse
     * Generate AST
       * Block
@@ -33,10 +33,10 @@ The LESS Compiler is designed to have several stages before the final CSS is gen
       * Mixin
       * Literal
   * Handle
-    * WIP: Parse variables, with MIXINs and outer scopes
+    * Parse variables, with MIXINs and outer scopes
       * `@[a-zA-Z0-9-_]`
       * `"@\{[a-zA-Z0-9-_]\}"`
-    * WIP: Calculate in LITERALs
+    * Calculate in LITERALs
       * `+ - * /`
       * `#[a-fA-F0-9]{6}`
       * `\d+px`
@@ -45,7 +45,7 @@ The LESS Compiler is designed to have several stages before the final CSS is gen
 
 <del>Replace MIXIN with corresponding BLOCK and strip out inner MIXINs (or throw errors).</del>
 
-In `handleMixin`, help every MIXIN find their matching BLOCK. Currently no further operation.
+In `handleMixin`, help every MIXIN find the copy of their matching BLOCK.
 
 ## How To Parse Variables
 
