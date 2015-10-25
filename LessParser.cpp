@@ -15,7 +15,7 @@
 
 #define SIZE_TAB 4
 
-#define FATAL(x) { cout << x << endl; exit(1); }
+#define FATAL(x) { cerr << x << endl; exit(1); }
 #define REGEX_MATCH_COUNT(x) distance(x, sregex_iterator())
 
 using namespace std;
@@ -45,7 +45,7 @@ string LessParser::findVariableValue(BlockNode* blockNode, string key) {
 
     while(node != 0) {
 
-        //cout << node->Selectors << endl;
+        ////cerr << node->Selectors << endl;
 
         auto it = node->Variables.find(key);
 
@@ -59,7 +59,7 @@ string LessParser::findVariableValue(BlockNode* blockNode, string key) {
 
             for(auto jt = node->Children.begin(); jt != node->Children.end(); ++jt) {
 
-                //cout << (*jt)->Type << endl;
+                ////cerr << (*jt)->Type << endl;
 
                 if((*jt)->Type == ParseNodeType::Mixin) {
 
@@ -130,7 +130,7 @@ bool LessParser::tryParseComment() {
 
         if(regex_search(input, match, regexComment)) {
 
-            cout << "COMMENT: " << match[1] << endl;
+            //cerr << "COMMENT: " << match[1] << endl;
 
             CommentNode* comment = new CommentNode();
             comment->Parent = mCurrentBlock;
@@ -168,7 +168,7 @@ bool LessParser::tryParseVariable() {
 
         if(regex_search(input, match, regexVariable)) {
 
-            cout << "VARIABLE: " << match[1] << ": " << match[2] << endl;
+            //cerr << "VARIABLE: " << match[1] << ": " << match[2] << endl;
 
             mCurrentBlock->Variables[string(match[1])] = string(match[2]);
 
@@ -203,7 +203,7 @@ bool LessParser::tryParseBlockStart() {
 
     if(regex_search(input, match, regexBlockStart)) {
 
-        cout << "BLOCK_START: " << match[2] << endl;
+        //cerr << "BLOCK_START: " << match[2] << endl;
 
         BlockNode* blockNode = new BlockNode();
         blockNode->Parent = mCurrentBlock;
@@ -211,8 +211,8 @@ bool LessParser::tryParseBlockStart() {
         blockNode->IsFunction = string(match[1]).find("(") == string::npos ? false : true;
         blockNode->Selectors = string(match[2]);
 
-        //cout << "BLOCK_START_2: " << match[2] << endl;
-        //cout << "BLOCK_START_2: " << blockNode->Selectors << endl;
+        ////cerr << "BLOCK_START_2: " << match[2] << endl;
+        ////cerr << "BLOCK_START_2: " << blockNode->Selectors << endl;
 
         string fullSelectors;
 
@@ -256,7 +256,7 @@ bool LessParser::tryParseMixin() {
 
     if(regex_search(input, match, regexMixin)) {
 
-        cout << "MIXIN: " << match[1] << "(" << match[2] << ")" << endl;
+        //cerr << "MIXIN: " << match[1] << "(" << match[2] << ")" << endl;
 
         MixinNode* mixinNode = new MixinNode();
         mixinNode->Parent = mCurrentBlock;
@@ -286,7 +286,7 @@ bool LessParser::tryParseLiteral() {
 
     if(regex_search(input, match, regexLiteral)) {
 
-        cout << "LITERAL: " << match[1] << ": " << match[2] << endl;
+        //cerr << "LITERAL: " << match[1] << ": " << match[2] << endl;
 
         LiteralNode* literalNode = new LiteralNode();
         literalNode->Parent = mCurrentBlock;
@@ -313,7 +313,7 @@ bool LessParser::tryParseBlockEnd() {
 
     if(mInput[mOffset] == '}') {
 
-        cout << "BLOCK_END: " << mCurrentBlock->Selectors << endl;
+        //cerr << "BLOCK_END: " << mCurrentBlock->Selectors << endl;
 
         mCurrentBlock = (BlockNode*) mCurrentBlock->Parent;
 
@@ -332,7 +332,7 @@ bool LessParser::tryParseBlockEnd() {
 
 void LessParser::handleMixin(BlockNode* blockNode) {
 
-    cout << "MIXIN_START: " << blockNode->FullSelectors << endl;
+    //cerr << "MIXIN_START: " << blockNode->FullSelectors << endl;
 
     for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
 
@@ -373,7 +373,8 @@ void LessParser::handleMixin(BlockNode* blockNode) {
             FATAL("ERROR_MIXIN_LINK_FAILED");
 
             MIXIN_ONE_DONE:
-                cout << "MIXIN_LINK: " << mixin->Anchor << " -> " << mixin->LinkedBlock->FullSelectors << endl;
+                //cerr << "MIXIN_LINK: " << mixin->Anchor << " -> " << mixin->LinkedBlock->FullSelectors << endl;
+                cout;
 
         }
         else if((*it)->Type == ParseNodeType::Block) {
@@ -385,13 +386,13 @@ void LessParser::handleMixin(BlockNode* blockNode) {
 
     }
 
-    cout << "MIXIN_END: " << blockNode->FullSelectors << endl;
+    //cerr << "MIXIN_END: " << blockNode->FullSelectors << endl;
 
 }
 
 void LessParser::handleVariable(BlockNode* blockNode) {
 
-    cout << "VARIABLE_START: " << blockNode->FullSelectors << endl;
+    //cerr << "VARIABLE_START: " << blockNode->FullSelectors << endl;
 
     blockNode->LoadArguments();
 
@@ -401,7 +402,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
             LiteralNode* literal = (LiteralNode*) *it;
 
-            cout << "VARIABLE_START_KEY: " << literal->Key << endl;
+            //cerr << "VARIABLE_START_KEY: " << literal->Key << endl;
 
             string output(literal->Value);
 
@@ -412,7 +413,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
                 sregex_iterator begin(output.begin(), output.end(), regexVariableUse);
                 sregex_iterator end = sregex_iterator();
 
-                cout << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
+                //cerr << "Found " << REGEX_MATCH_COUNT(begin) << " variable uses." << endl;
 
                 if(REGEX_MATCH_COUNT(begin) == 0) break;
 
@@ -420,7 +421,7 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
                     string key = string((*it)[0]);
 
-                    //cout << key << endl;
+                    ////cerr << key << endl;
 
                     smatch match;
 
@@ -451,13 +452,13 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
     }
 
-    cout << "VARIABLE_END: " << blockNode->FullSelectors << endl;
+    //cerr << "VARIABLE_END: " << blockNode->FullSelectors << endl;
 
 }
 
 void LessParser::handleLiteral(BlockNode* blockNode) {
 
-    cout << "LITERAL_START: " << blockNode->FullSelectors << endl;
+    //cerr << "LITERAL_START: " << blockNode->FullSelectors << endl;
 
     regex regexSymbol("[\\+\\-\\*\\/]");
 
@@ -467,13 +468,13 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
 
             LiteralNode* literal = (LiteralNode*) *it;
 
-            cout << "LITERAL_START_KEY: " << literal->Key << endl;
+            //cerr << "LITERAL_START_KEY: " << literal->Key << endl;
 
             string output(literal->Value);
 
             if(regex_search(output, regexSymbol)) {
 
-                cout << "LITERAL_START_VALUE: " << literal->Value << endl;
+                //cerr << "LITERAL_START_VALUE: " << literal->Value << endl;
 
                 output = Calculate(output);
 
@@ -499,7 +500,7 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
 
     }
 
-    cout << "LITERAL_END: " << blockNode->FullSelectors << endl;
+    //cerr << "LITERAL_END: " << blockNode->FullSelectors << endl;
 
 }
 
@@ -507,13 +508,13 @@ string LessParser::outputBlock(BlockNode* blockNode, int indent) {
 
     if(blockNode->IsFunction) {
 
-        cout << "FUNCTION_BLOCK: " << blockNode->FullSelectors << endl;
+        //cerr << "FUNCTION_BLOCK: " << blockNode->FullSelectors << endl;
 
         return "";
 
     }
 
-    cout << "BLOCK: " << blockNode->FullSelectors << endl;
+    //cerr << "BLOCK: " << blockNode->FullSelectors << endl;
 
     list<ParseNode*> pendingNodes;
     list<BlockNode*> pendingBlocks;
@@ -586,7 +587,7 @@ string LessParser::outputBlock(BlockNode* blockNode, int indent) {
 void LessParser::PreParse() {
 
     string output(mInput);
-    cout << output << endl;
+    //cerr << output << endl;
     // string regex_replace(subject, regex, replacement).
     // /r, /r/n -> /n.
     output = regex_replace(output, regex("\r\n?"), "\n");
@@ -596,7 +597,7 @@ void LessParser::PreParse() {
     //output = regex_replace(output, regex("#([a-zA-Z0-9])([a-zA-Z0-9])([a-zA-Z0-9])([^a-zA-Z0-9])"), "#$1$1$2$2$3$3$4");
     output = regex_replace(output, regex("#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])([^a-fA-F0-9])"), "#$1$1$2$2$3$3$4");
 
-    cout << "PreParse: " << output << endl;
+    //cerr << "PreParse: " << output << endl;
 
     mInput = output;
 
@@ -604,7 +605,7 @@ void LessParser::PreParse() {
 
 void LessParser::Parse() {
 
-    //cout << mInput.length() << endl;
+    ////cerr << mInput.length() << endl;
 
     int lastOffset = 0;
 
@@ -612,7 +613,7 @@ void LessParser::Parse() {
 
         skipW(0);
 
-        //cout << mInput[mOffset] << endl;
+        ////cerr << mInput[mOffset] << endl;
 
         if(tryParseComment()) continue;
         if(tryParseVariable()) continue;
@@ -625,13 +626,13 @@ void LessParser::Parse() {
 
             if(mOffset >= mInput.length() - 1) {
 
-                cout << "EOF" << endl;
+                //cerr << "EOF" << endl;
                 break;
 
             }
             else {
 
-                cout << "SKIP: " << mInput[mOffset] << " @ " << mOffset << endl;
+                //cerr << "SKIP: " << mInput[mOffset] << " @ " << mOffset << endl;
                 mOffset++;
 
             }

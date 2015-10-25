@@ -8,8 +8,8 @@ void BlockNode::FillArguments(string arguments) {
 
     string output(Arguments);
 
-    //cout << "arguments: " << arguments << endl;
-    //cout << "Arguments: " << Arguments << endl;
+    ////cerr << "arguments: " << arguments << endl;
+    ////cerr << "Arguments: " << Arguments << endl;
 
     // For mixin arguments.
     regex regexArgumentDelimiter("\\s*[,]\\s*");
@@ -29,7 +29,7 @@ void BlockNode::FillArguments(string arguments) {
         string key((*jt)[1]);
         string oldValue((*jt)[2]);
         string newValue((*it));
-        //cout << key << ": " << oldValue << " -> " << newValue << endl;
+        ////cerr << key << ": " << oldValue << " -> " << newValue << endl;
 
         output.replace(output.find(oldValue), oldValue.length(), newValue);
 
@@ -47,11 +47,11 @@ void BlockNode::LoadArguments() {
     sregex_iterator begin(Arguments.begin(), Arguments.end(), regexArgumentDefine);
     sregex_iterator end = sregex_iterator();
 
-    cout << "Found " << distance(begin, end) << " arguments." << endl;
+    //cerr << "Found " << distance(begin, end) << " arguments." << endl;
 
     for(sregex_iterator it = begin; it != end; ++it) {
 
-        cout << (*it)[1] << ": " << (*it)[2] << endl;
+        //cerr << (*it)[1] << ": " << (*it)[2] << endl;
         argumentStore[string((*it)[1])] = string((*it)[2]);
 
     }
@@ -66,7 +66,7 @@ void BlockNode::LoadArguments() {
 
     }
 
-    cout << "Arguments loaded." << endl;
+    //cerr << "Arguments loaded." << endl;
 
 }
 
