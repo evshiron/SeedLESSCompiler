@@ -11,7 +11,7 @@
 #include <map>
 #include <regex>
 
-#define FATAL(x) { cout << x << endl; exit(1); }
+#define FATAL(x) { cerr << x << endl; exit(1); }
 
 using namespace std;
 
@@ -106,7 +106,7 @@ public:
             string selectors(Selectors);
             selectors.append(" ");
 
-            //cout << selectors << endl;
+            ////cerr << selectors << endl;
 
             str.append(selectors);
             str.append("{\n");

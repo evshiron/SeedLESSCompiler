@@ -6,74 +6,37 @@
 
 using namespace std;
 
-int main() {
+#define FATAL(x) { cerr << x << endl; exit(1); }
 
-    cout << "Hello, World!" << endl;
+int main(int argc, const char** argv) {
 
-    //TreeNode* root = new TreeNode();
-    //root->type = NodeType::Comment;
+    if(argc < 2) {
 
-    const char* less = R"(
+        cerr << R"(Usage: SeedLESSCompiler <source.less> > <dest.css>)" << endl;
 
-// Comment.
-/* Multiline comment. */
-
-@short-color: #4B4; // Comment.
-@nice-blue: #5B83AD;
-#test2 {
-    color: @nice-blue;
-    @green: #00ff00;
-    @url: "aaa";
-}
-
-#test4 {
-  color: black;
-  .c1 {
-     color: red;
-     .c11{
-        #test2;
-        color:@green;
-        background-image: url("@{url}");
-     }
-  }
-  .c2{
-      color:yellow;
-  }
-}
-
-/*
-
-Output:
-
-#test2 {
-    color: #5B83AD;
-}
-
-#test4 {
-    color: black;
-    .c1 {
-        color: red;
-        .c11 {
-            #test2;
-            color:green;
-        }
     }
-    .c2 {
-        color:yellow;
+    else {
+
+        FILE* file = fopen(argv[1], "rb");
+        fseek(file, 0L, SEEK_END);
+        size_t size = ftell(file);
+        rewind(file);
+
+        char bytes[size];
+
+        size_t s = fread(bytes, 1, size, file);
+        if(size != s) FATAL("ERROR_SIZE_NOT_MATCH");
+
+        LessParser* parser = new LessParser(bytes);
+        parser->PreParse();
+        parser->Parse();
+        parser->Handle();
+
+        cout << parser->GetCSS() << endl;
+
+        return 0;
+
     }
-}
 
-*/
-
-)";
-
-    LessParser* parser = new LessParser(less);
-    parser->PreParse();
-    parser->Parse();
-    parser->Handle();
-
-    cout << "Output: " << parser->GetCSS() << endl;
-
-    return 0;
 
 }
