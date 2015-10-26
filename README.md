@@ -16,6 +16,10 @@ make
 
 And it's confirmed that this project won't compile with MSVC. If you are going to build it on Windows, try using MinGW 64 with GCC version > 4.9.0. It's confirmed to build with GCC 5.2.0.
 
+## Disclaimer
+
+This project is mainly developed in MacOSX and Linux, and it's Windows port is built by MinGW64. However, the `Calculator` seems to be broken in Windows and crashes at `msvcrt.dll`.
+
 ## How It Works
 
 The LESS Compiler is designed to have several stages before the final CSS is generated.
@@ -33,6 +37,7 @@ The LESS Compiler is designed to have several stages before the final CSS is gen
       * Mixin
       * Literal
   * Handle
+    * Parse MIXINs
     * Parse variables, with MIXINs and outer scopes
       * `@[a-zA-Z0-9-_]`
       * `"@\{[a-zA-Z0-9-_]\}"`
@@ -59,7 +64,7 @@ Recursively generate from top `BlockNode` to bottom `BlockNode`.
 
   * `test1.less`: PASS
   * `test2.less`: PASS
-  * `test3.less`: PASS
+  * `test3.less`: PASS, FAIL in Windows
   * `test4.less`: PASS
   * `test5.less`: PASS
   * `test6.less`: PASS
