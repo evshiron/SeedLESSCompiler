@@ -370,7 +370,7 @@ string Calculate(string origin) {
 //    string pre_expression = string("  (  #323211-   #323212)*(#323213-#323214)");
 
     pre_expression.erase(remove_if(pre_expression.begin(), pre_expression.end(), ::isspace), pre_expression.end());
-    cout << pre_expression << endl;
+//    cout << pre_expression << endl;
     if (pre_expression.find('#') != -1) {
         int r_val;
         int g_val;
@@ -395,7 +395,7 @@ string Calculate(string origin) {
             int temp = one * 16 + two;
             string temp_s = to_string(temp);
             replace(expression_one, key, temp_s);
-            cout << "expression_one" << expression_one << endl;
+//            cout << "expression_one" << expression_one << endl;
 //            cout << "temp"+temp_s << endl;
 //            cout << "key"+key << endl;
 //            cout << "expression_one"+expression_one << endl;
@@ -405,7 +405,7 @@ string Calculate(string origin) {
         if (r_val > 255) {
             r_val = 255;
         }
-        cout << "r_val" << r_val << endl;
+//        cout << "r_val" << r_val << endl;
         if (r_val < 0) {
             r_val = 0;
         }
@@ -467,7 +467,7 @@ string Calculate(string origin) {
         if (result >= 100) {
             result = 100;
         }
-        cout << result << '%' << endl;
+//        cout << result << '%' << endl;
         ostringstream ss;   //用这种方法可以处理.后0的数量
         ss << result;
         string s(ss.str());
@@ -483,7 +483,7 @@ string Calculate(string origin) {
 
         double result = function_cal(exercise);
 
-        cout << result << "px" << endl;
+//        cout << result << "px" << endl;
         ostringstream ss;
         ss << result;
         string s(ss.str());
@@ -500,7 +500,7 @@ string Calculate(string origin) {
         exercise[sizeof(exercise) - 1] = 0;
 
         double result = function_cal(exercise);
-        cout << result << "dp" << endl;
+//        cout << result << "dp" << endl;
         ostringstream ss;
         ss << result;
         string s(ss.str());
@@ -518,7 +518,7 @@ string Calculate(string origin) {
         exercise[sizeof(exercise) - 1] = 0;
 
         double result = function_cal(exercise);
-        cout << result << "dip" << endl;
+//        cout << result << "dip" << endl;
         ostringstream ss;
         ss << result;
         string s(ss.str());

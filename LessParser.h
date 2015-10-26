@@ -6,7 +6,9 @@
 #define SEEDLESSCOMPILER_LESSPARSER_H
 
 #include "ParseNode.h"
-
+string rgbToString(int r, int g, int b);
+string rgbaConvert(string rgba);
+string rgbConvert(string rgb);
 class LessParser {
 
 private:
@@ -34,6 +36,7 @@ public:
     string findVariableValue(BlockNode* blockNode, string key);
     void skipW(int count);
 
+    bool needCalculate(string expression);
     bool tryParseComment();
     bool tryParseVariable();
     bool tryParseBlockStart();

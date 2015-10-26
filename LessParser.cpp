@@ -456,12 +456,34 @@ void LessParser::handleVariable(BlockNode* blockNode) {
 
 }
 
+/**
+ * gcc  4.9 can't support the regex [\\+\\-\\*\\/],
+ * so i write a function to replace it
+ */
+bool LessParser::needCalculate(string expression)
+{
+    if(expression.find('+')!=-1)
+        return true;
+    else if(expression.find('-')!=-1)
+        return true;
+    else if(expression.find('*')!=-1)
+        return true;
+    else if(expression.find('/')!=-1)
+        return true;
+    else
+        return false;
+}
+
 void LessParser::handleLiteral(BlockNode* blockNode) {
 
     //cerr << "LITERAL_START: " << blockNode->FullSelectors << endl;
 
-    regex regexSymbol("[\\+\\-\\*\\/]");
-
+//    regex regexSymbol("[\\+\\-\\*\\/]");
+      regex regexRGB("rgb");
+      regex regexRGBA("rgba");
+      regex regex_color("#[a-fA-F0-9]{6}");
+    regex regex_rgb("rgb\\([0-9][^,],[0-9][^,],[0-9][^,]\\)");
+    regex regex_rgba("rgba\\([0-9][^,],[0-9][^,],[0-9][^,],[0-9]\\)");
     for(auto it = blockNode->Children.begin(); it != blockNode->Children.end(); ++it) {
 
         if((*it)->Type == ParseNodeType::Literal) {
@@ -472,10 +494,35 @@ void LessParser::handleLiteral(BlockNode* blockNode) {
 
             string output(literal->Value);
 
-            if(regex_search(output, regexSymbol)) {
-
+            if(needCalculate(output)) {            //todo  add rgb calculate and rgba calculate
+//                if(regex_search(output,regexRGB))
+                if(output.find("rgb(") != string::npos)
+                {
+                    output.erase(remove_if(output.begin(), output.end(), ::isspace), output.end());
+                    cout << "######################1 start " << output<<endl;
+                    sregex_iterator begin(output.begin(),output.end(), regex_rgb);
+                    sregex_iterator end = sregex_iterator();
+                    for (sregex_iterator it = begin; it != end; ++it) {
+                        string key = (*it).str();
+                        cout << "######################1 key " << key<<endl;
+                        replace(output, key, rgbConvert(key));
+                    }
+                    cout << "######################1 " <<output << endl;
+                }
+//                if(regex_search(output,regexRGBA))
+                if(output.find("rgba(") != string::npos)
+                {
+                    output.erase(remove_if(output.begin(), output.end(), ::isspace), output.end());
+                    cout << "######################2 start "<<output << endl;
+                    sregex_iterator begin(output.begin(),output.end(), regex_rgba);
+                    sregex_iterator end = sregex_iterator();
+                    for (sregex_iterator it = begin; it != end; ++it) {
+                        string key = (*it).str();
+                        replace(output, key, rgbaConvert(key));
+                    }
+                    cout << "######################2 " <<output << endl;
+                }
                 //cerr << "LITERAL_START_VALUE: " << literal->Value << endl;
-
                 output = Calculate(output);
 
             }
@@ -658,4 +705,52 @@ string LessParser::GetCSS() {
     return outputBlock(mRootBlock, 0);
 
 }
+
+string rgbConvert(string rgb)
+{
+    rgb.erase(remove_if(rgb.begin(), rgb.end(), ::isspace), rgb.end());
+    regex regexNumber("[0-9][^,]");
+    sregex_iterator begin(rgb.begin(),rgb.end(), regexNumber);
+    sregex_iterator end = sregex_iterator();
+    int count=0;
+    int r,g,b;
+    for (sregex_iterator it = begin; it != end; ++it) {
+        string key = (*it).str();
+        cout << "######regex number "<<count << key<<endl;
+        if(count==0)
+            r=stoi(key);
+        else if(count==1)
+            g=stoi(key);
+        else if(count==2)
+            b=stoi(key);
+        else{}
+        count++;
+    }
+    cout<<"rbg"<<r<<g<<b<< endl;
+    return rgbToString(r,g,b);
+}
+
+string rgbaConvert(string rgba)
+{
+    rgba.erase(remove_if(rgba.begin(), rgba.end(), ::isspace), rgba.end());
+    regex regexNumber("[0-9][^,]");
+    sregex_iterator begin(rgba.begin(),rgba.end(), regexNumber);
+    sregex_iterator end = sregex_iterator();
+    int count=0;
+    int r,g,b;
+    for (sregex_iterator it = begin; it != end; ++it) {
+        string key = (*it).str();
+        if(count==0)
+            r=stoi(key);
+        else if(count==1)
+            g=stoi(key);
+        else if(count==2)
+            b=stoi(key);
+        else{}
+        count++;
+    }
+    cout<<"rbg"<<r<<g<<b<< endl;
+    return rgbToString(r,g,b);
+}
+
 
