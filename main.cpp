@@ -19,24 +19,28 @@ int main(int argc, const char** argv) {
     }
     else {
 
-        FILE* file = fopen(argv[1], "rb");
-        fseek(file, 0L, SEEK_END);
-        size_t size = ftell(file);
-        rewind(file);
+        if(FILE* file = fopen(argv[1], "rb")) {
 
-        char bytes[size];
+            fseek(file, 0L, SEEK_END);
+            size_t size = ftell(file);
+            rewind(file);
 
-        size_t s = fread(bytes, 1, size, file);
-        if(size != s) FATAL("ERROR_SIZE_NOT_MATCH");
+            char bytes[size];
 
-        LessParser* parser = new LessParser(bytes);
-        parser->PreParse();
-        parser->Parse();
-        parser->Handle();
+            size_t s = fread(bytes, 1, size, file);
+            if(size != s) FATAL("ERROR_SIZE_NOT_MATCH");
 
-        cout << parser->GetCSS() << endl;
+            LessParser* parser = new LessParser(bytes);
+            parser->PreParse();
+            parser->Parse();
+            parser->Handle();
 
-        return 0;
+            cout << parser->GetCSS() << endl;
+
+            return 0;
+
+        }
+        else FATAL("ERROR_FILE_NOT_FOUND");
 
     }
 
